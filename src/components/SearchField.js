@@ -9,7 +9,8 @@ class SearchField extends React.Component {
     }
 
     handleChange = (event) =>  {
-        this.setState({ term : event.target.value });
+        this.setState({ term: event.target.value });
+        this.props.searchGif(this.state.term);
         //this.props.onTermChange(term);
     }
 
@@ -18,7 +19,6 @@ class SearchField extends React.Component {
             <div className="search">
                 <h1>Search!</h1>
                 <input onChange={this.handleChange} />
-                <p>{this.state.term}</p>
             </div>
         );
     }
