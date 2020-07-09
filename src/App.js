@@ -48,10 +48,46 @@ class App extends React.Component {
             .catch(err => console.error(err));        
     }
 
+    sort = (event) => {
+        let sorted = [];
+        if (event.target.value === "ar") {
+            let numG = 0;
+            let numR = 1;
+            this.state.gifs.forEach(gif => {
+                if (gif.rating === 'g') {
+                    numG++;
+                    sorted.unshift(gif);
+                }
+                else if (gif.rating === 'r') {
+                    numR++;
+                    sorted.push(gif);
+                }
+                else if (gif.rating === 'pg') {
+                    sorted.splice(numG,0,gif);
+                }
+                else {
+                    sorted.splice(this.state.gifs.length-numR,0,gif);
+                }
+            });
+            console.log(sorted);
+            this.setState({ gifs: sorted });
+        }
+       
+    }
+
     render() {
         return (
             <div>
                 <SearchField handleChange={this.handleChange} />
+
+                <label htmlFor="sort">Sort by </label>
+                <select name="sort" id="sort" onChange={this.sort}>
+                        <option value ="default"></option>
+                        <option value="ar">Age Rating</option>
+                        <option value="new">Newest First</option>
+                        <option value="old">Oldest First</option>
+                    </select>
+
                 <GifList gifs={this.state.gifs} />
             </div>
         );
