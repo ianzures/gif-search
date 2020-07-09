@@ -13,15 +13,6 @@ import axios from 'axios';
  *          time since upload
  *          username
  *          verified user
- * 
- * sort by
- *          age rating
- *          size
- *          time since upload
- * 
- * 
- * 
- * 
  * */
 class App extends React.Component {
     constructor() {
@@ -49,30 +40,48 @@ class App extends React.Component {
     }
 
     sort = (event) => {
-        let sorted = [];
+        let sorted = this.state.gifs;
         if (event.target.value === "ar") {
-            let numG = 0;
-            let numR = 1;
-            this.state.gifs.forEach(gif => {
-                if (gif.rating === 'g') {
-                    numG++;
-                    sorted.unshift(gif);
+            sorted.sort((a, b) => {
+                if (a.rating < b.rating) {
+                    return -1;
                 }
-                else if (gif.rating === 'r') {
-                    numR++;
-                    sorted.push(gif);
+                if (a.rating > b.rating) {
+                    return 1;
                 }
-                else if (gif.rating === 'pg') {
-                    sorted.splice(numG,0,gif);
-                }
-                else {
-                    sorted.splice(this.state.gifs.length-numR,0,gif);
-                }
+                return 0;
+
             });
-            console.log(sorted);
+            
             this.setState({ gifs: sorted });
         }
-       
+        else {
+            sorted = this.state.gifs;
+            sorted.sort((a, b) => {
+                if (this.convertToDate(a) < this.convertToDate(b)) {
+                    return -1;
+                }
+                if (this.convertToDate(a) > this.convertToDate(b)) {
+                    return 1;
+                }
+                return 0;
+            });
+
+            if (event.target.value === "old") {
+                this.setState({ gifs: sorted });
+            }
+            else {
+                sorted.reverse();
+                this.setState({ gifs: sorted });
+            }
+
+        }     
+    }
+
+    convertToDate = (gifObject) => {
+        let parts = gifObject.import_datetime.substring(0, 10).split('-');
+        let myDate = new Date(parts[0], parts[1] - 1, parts[2]);
+        return myDate;
     }
 
     render() {
@@ -84,8 +93,8 @@ class App extends React.Component {
                 <select name="sort" id="sort" onChange={this.sort}>
                         <option value ="default"></option>
                         <option value="ar">Age Rating</option>
-                        <option value="new">Newest First</option>
-                        <option value="old">Oldest First</option>
+                        <option value="new">Newest</option>
+                        <option value="old">Oldest</option>
                     </select>
 
                 <GifList gifs={this.state.gifs} />
