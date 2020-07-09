@@ -1,27 +1,40 @@
 import React from 'react';
 
+const input = {
+    display: 'inlineBlock',
+    float: 'right',
+    fontSize: '22px',
+    marginRight: '2%',
+    textAlign: 'center',
+    width: '20%',
+}
+    
 class SearchField extends React.Component {
     constructor() {
         super();
         this.state = {
-            term: ''
+            search: ''
         }
     }
 
-    handleChange = (event) =>  {
-        this.setState({ term: event.target.value });
-        this.props.searchGif(this.state.term);
-        //this.props.onTermChange(term);
+    onInputChange = (event) => {
+        this.setState({ search : event.target.value });
+        this.props.handleChange(event.target.value);
     }
 
     render() {
         return (
             <div className="search">
-                <h1>Search!</h1>
-                <input onChange={this.handleChange} />
+                <h1 style={{paddingLeft:'2%'}}>
+                    <span> Giphy Search!
+                        <input style={input} placeholder="Search for gifs!" onChange={this.onInputChange} />
+                    </span>
+                </h1>
             </div>
+
         );
     }
 }
 
 export default SearchField;
+
