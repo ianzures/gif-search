@@ -10,15 +10,15 @@ const input = {
 }
     
 class SearchField extends React.Component {
-    constructor() {
-        super();
-        this.state = {
-            search: ''
-        }
-    }
+   //// constructor() {
+    //    super();
+    //    this.state = {
+    //        search: ''
+    //    }
+   // }
 
     onInputChange = (event) => {
-        this.setState({ search : event.target.value });
+        //this.setState({ search : event.target.value });
         this.props.handleChange(event.target.value);
     }
 

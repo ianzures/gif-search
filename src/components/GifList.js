@@ -7,7 +7,7 @@ const GifList = (props) => {
     );
 
     return (
-        <div style={{paddingLeft:'2%',paddinLeft:'2%'}}>
+        <div style={{paddingLeft:'2%',paddinLeft:'2%', columns:'35% 3'}}>
             {gifItems}
         </div>
     );
