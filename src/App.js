@@ -33,24 +33,23 @@ class App extends React.Component {
         axios.get(`http://api.giphy.com/v1/gifs/search?q=${search.replace(/\s/g, '+')}&api_key=9S4WDGPk7Csoi0lZi4HPSHIwlejTxR2I`)
             .then(result => {
 
+                // if some filter or sort has been initialized...
+                // Uncheck any checked filter in UI.
+                document.getElementById("g").checked = false
+                document.getElementById("pg").checked = false;
+                document.getElementById("pg-13").checked = false;
+                document.getElementById("r").checked = false;
+                // set sort drop down to default ('');
+                document.getElementById('sort').selectedIndex = 0;
+
+                this.setState({ filtersAndSort: [] });
                 this.setState({ gifs: result.data.data });
                 this.setState({ displayed: result.data.data });
 
                 //console.log(this.state.displayed);
 
-                // if some filter or sort has been initialized...
-                if (!(this.state.filtersAndSort[0] === '') && (this.state.filtersAndSort[1] === '') && (this.state.filtersAndSort[2] === '')
-                    && (this.state.filtersAndSort[3] === '') && (this.state.filtersAndSort[4] === '')) {
-                    // Uncheck any checked filter in UI.
-                    document.getElementById("g").checked = false
-                    document.getElementById("pg").checked = false;
-                    document.getElementById("pg-13").checked = false;
-                    document.getElementById("r").checked = false;
-                    // set sort drop down to default ('');
-                    document.getElementById('sort').selectedIndex = 0;
-
-                    this.setState({ filtersAndSort: [] });
-                }
+              
+                
                 
             })
             .catch(err => console.error(err));
@@ -114,54 +113,56 @@ class App extends React.Component {
                 break;
         }
 
-        //console.log(appliedFS);
-        this.setState({ filtersAndSort: appliedFS });
 
-        this.filter();
+        this.filter(appliedFS);
     }
 
-    filter = () => {
-
+    filter = (filters) => {
+        //console.log(this.state.filtersAndSort);
         let copyOfReference = this.state.gifs;
 
         // if none of the indices have been initialized, the must be no filters or sort and we can display our reference array. 
-        if ((this.state.filtersAndSort[0] === '') && (this.state.filtersAndSort[1] === '') && (this.state.filtersAndSort[2] === '')
-            && (this.state.filtersAndSort[3] === '') && (this.state.filtersAndSort[4] === '')) {
+        if ((filters[0] === '') && (filters[1] === '') && (filters[2] === '')
+            && (filters[3] === '') && (filters[4] === '')){
+
             this.setState({ displayed: copyOfReference });
-            //console.log('not impossible');
+
+            console.log('displayed has been reverted to original. no fs');
         }
         else {
             /*muliple if statements as the array could include more than one of these. includes() is used instead of directly accessing the index
               for readability. it is assumed includes() is not resource intensive.*/
-            if (this.state.filtersAndSort.includes('g')) {
+            if (filters.includes('g')) {
                 copyOfReference = copyOfReference.filter(gif => gif.rating !== 'g');
+                console.log(copyOfReference);
             }
-            if (this.state.filtersAndSort.includes('pg')) {
+            if (filters.includes('pg')) {
                 copyOfReference = copyOfReference.filter(gif => gif.rating !== 'pg');
+                console.log(copyOfReference);
+
             }
-            if (this.state.filtersAndSort.includes('pg-13')) {
+            if (filters.includes('pg-13')) {
                 copyOfReference = copyOfReference.filter(gif => gif.rating !== 'pg-13');
+                console.log(copyOfReference);
+
             }
-            if (this.state.filtersAndSort.includes('r')) {
+            if (filters.includes('r')) {
                 copyOfReference = copyOfReference.filter(gif => gif.rating !== 'r');
+                console.log(copyOfReference);
+
             }
 
-            this.setState({ displayed: copyOfReference });
 
-            // once our gifs have been filtered, we can sort the remaining gifs, assuming filtersAndSort[4] is populated.
-            if (this.state.filtersAndSort[4] !== '') {
-                this.sort();
-            }
+            //once our gifs have been filtered, we can sort the remaining gifs, assuming filtersAndSort[4] is populated.
+            this.sort(filters, copyOfReference);
         }
     }
 
-    sort = () => {
-        // sort our filtered array not our reference.
-        let copyOfFiltered = this.state.displayed;
+    sort = (filters, filteredArray) => {
 
         // elses used as only one sort can be active at a time.
-        if (this.state.filtersAndSort.includes('ar')) {
-            copyOfFiltered.sort((a, b) => {
+        if (filters.includes('ar')) {
+            filteredArray.sort((a, b) => {
                 if (a.rating < b.rating) {
                     return -1;
                 }
@@ -171,8 +172,8 @@ class App extends React.Component {
                 return 0;
             });
         }
-        else if (this.state.filtersAndSort.includes('new')) {
-            copyOfFiltered.sort((a, b) => {
+        else if (filters.includes('new')) {
+            filteredArray.sort((a, b) => {
                 if (this.convertToDate(a) < this.convertToDate(b)) {
                     return 1;
                 }
@@ -182,8 +183,8 @@ class App extends React.Component {
                 return 0;
              });
         }
-        else if (this.state.filtersAndSort.includes('old')) {
-            copyOfFiltered.sort((a, b) => {
+        else if (filters.includes('old')) {
+            filteredArray.sort((a, b) => {
                 if (this.convertToDate(a) > this.convertToDate(b)) {
                     return 1;
                 }
@@ -193,13 +194,14 @@ class App extends React.Component {
                 return 0;
             });
         }
-        else if (this.state.filtersAndSort.includes('fs')) {
-            copyOfFiltered.sort((a, b) => {
+        else if (filters.includes('fs')) {
+            filteredArray.sort((a, b) => {
                 return a.images.downsized.size - b.images.downsized.size;
             });
         }
 
-        this.setState({ displayed : copyOfFiltered });
+        this.setState({ displayed: filteredArray });
+        this.setState({ filtersAndSort: filters });
     }
 
 
@@ -245,5 +247,4 @@ class App extends React.Component {
         );
     }
 }
-
 export default App;
