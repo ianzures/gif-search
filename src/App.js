@@ -44,13 +44,7 @@ class App extends React.Component {
 
                 this.setState({ filtersAndSort: [] });
                 this.setState({ gifs: result.data.data });
-                this.setState({ displayed: result.data.data });
-
-                //console.log(this.state.displayed);
-
-              
-                
-                
+                this.setState({ displayed: result.data.data });                
             })
             .catch(err => console.error(err));
     }
@@ -118,7 +112,6 @@ class App extends React.Component {
     }
 
     filter = (filters) => {
-        //console.log(this.state.filtersAndSort);
         let copyOfReference = this.state.gifs;
 
         // if none of the indices have been initialized, the must be no filters or sort and we can display our reference array. 
@@ -151,7 +144,6 @@ class App extends React.Component {
                 console.log(copyOfReference);
 
             }
-
 
             //once our gifs have been filtered, we can sort the remaining gifs, assuming filtersAndSort[4] is populated.
             this.sort(filters, copyOfReference);
